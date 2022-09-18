@@ -13,7 +13,6 @@ const useAuth = () => {
 	}, [])
 
 	const setLogin = (token: string) => {
-		console.log(token)
 		localStorage.setItem('token', token)
 		setToken(token)
 	}

@@ -29,6 +29,9 @@ import { FolderPlus, HamburgerButton, UploadOne } from '@icon-park/react'
 import { AddIcon, SearchIcon } from '@chakra-ui/icons'
 
 import CreateFolderModal from '../../components/drive/create-folder-modal'
+import { useEffect, useState } from 'react'
+import { GetPathApi } from '../../api'
+import useAuth from '../../hooks/useAuth'
 
 interface HeaderProps extends FlexProps{
 	onOpen: () => void
@@ -123,14 +126,31 @@ interface Folder{
 }
 
 const FolderBreadCrumb = () => {
+	const [folders, setFolders] = useState<Folder[]>([])
 
-	const folders: Folder[] = [
-		{ name: 'Root', id: 'root' },
-		{ name: 'Media', id: 'ddddd' },
-		{ name: 'Hello', id: 'dddddddd' },
-		{ name: 'Hello', id: 'dddddddddd' },
-		{ name: 'Hello', id: 'ddddddddddddd' },
-	]
+	const { token, loading } = useAuth()
+
+	useEffect(() => {
+		if (loading) return
+		if (!token) return
+		GetPathApi(token, 'root')
+			.then((res) => {
+				if (!res.ok) {
+					return
+				}
+				res.json().then((data) => {
+					const folders = data.data
+
+					setFolders(() => folders)
+				})
+			})
+			.catch((e: any) => {
+
+			})
+			.finally(() => {
+
+			})
+	}, [loading, token])
 
 	return (
 		<>
