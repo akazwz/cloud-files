@@ -6,17 +6,21 @@ const useAuth = () => {
 
 	useEffect(() => {
 		const localToken = localStorage.getItem('token')
-		setToken(localToken)
+		if (localToken) {
+			setToken(localToken)
+		}
 		setLoading(false)
 	}, [])
 
 	const setLogin = (token: string) => {
+		console.log(token)
 		localStorage.setItem('token', token)
 		setToken(token)
 	}
 
 	const setLogout = () => {
 		setToken(null)
+		localStorage.removeItem('token')
 	}
 
 	return {

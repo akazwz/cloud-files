@@ -40,7 +40,7 @@ const Login = () => {
 				return
 			}
 			const json = await res.json()
-			const { token } = json
+			const { token } = json.data
 			setLogin(token)
 			toast({
 				title: 'Success',
@@ -58,8 +58,6 @@ const Login = () => {
 		} finally {
 			setLoading(false)
 		}
-
-		setLogin('fake-token')
 	}
 
 	return (
