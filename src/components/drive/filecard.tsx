@@ -3,11 +3,15 @@ import { Box, Grid, GridProps, Text, Tooltip, } from '@chakra-ui/react'
 
 import { FolderIcon } from '../icons/FolderIcon'
 import { ImageIcon } from '../icons/ImageIcon'
+import { useNavigate } from 'react-router-dom'
+import { OtherIcon } from '../icons/OtherIcon'
 
 export interface FileProps{
-	type: string
+	category: string
 	name: string
 	size: number
+	starred: boolean
+	thumbnail: string
 }
 
 export const FileGrid = (props: GridProps) => {
@@ -24,11 +28,11 @@ export const FileGrid = (props: GridProps) => {
 
 export const FileCard = (file: FileProps) => {
 	const Content = () => {
-		switch (file.type) {
+		switch (file.category) {
 			case 'image':
 				return <ImageCard name={file.name} size={file.size} />
 			default:
-				return <></>
+				return <OtherCard name={file.name} size={file.size} />
 		}
 	}
 
@@ -44,6 +48,7 @@ export interface FolderProps{
 
 export const FolderCard = ({ name, id }: FolderProps) => {
 	const folderName = name.length > 10 ? name.slice(0, 7) + '...' : name
+	const navigate = useNavigate()
 
 	return (
 		<Box
@@ -55,6 +60,7 @@ export const FolderCard = ({ name, id }: FolderProps) => {
 			mx="auto"
 			overflow="hidden"
 			textAlign="center"
+			onClick={() => navigate(`/drive/folders/${id}`)}
 		>
 			<FolderIcon fontSize="90" />
 			<Tooltip label={name}>
@@ -79,6 +85,28 @@ const ImageCard = ({ name, size }: { name: string, size: number }) => {
 			textAlign="center"
 		>
 			<ImageIcon fontSize="90" />
+			<Tooltip label={name}>
+				<Text fontWeight="500" whiteSpace="nowrap" maxWidth="100px">{filename}</Text>
+			</Tooltip>
+			<Text fontWeight="300" fontSize="13px">{size}</Text>
+		</Box>
+	)
+}
+
+const OtherCard = ({ name, size }: { name: string, size: number }) => {
+	const filename = name.length > 10 ? name.slice(0, 7) + '...' : name
+	return (
+		<Box
+			width="8.7rem"
+			p={3}
+			m={3}
+			borderWidth={1}
+			rounded="lg"
+			mx="auto"
+			overflow="hidden"
+			textAlign="center"
+		>
+			<OtherIcon fontSize="90" />
 			<Tooltip label={name}>
 				<Text fontWeight="500" whiteSpace="nowrap" maxWidth="100px">{filename}</Text>
 			</Tooltip>

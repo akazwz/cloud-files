@@ -25,13 +25,12 @@ import {
 	useDisclosure,
 	FlexProps,
 } from '@chakra-ui/react'
+import { Link, useRouteLoaderData } from 'react-router-dom'
 import { FolderPlus, HamburgerButton, UploadOne } from '@icon-park/react'
 import { AddIcon, SearchIcon } from '@chakra-ui/icons'
 
 import CreateFolderModal from '../../components/drive/create-folder-modal'
-import { useEffect, useState } from 'react'
-import { GetPathApi } from '../../api'
-import useAuth from '../../hooks/useAuth'
+import { useRef } from 'react'
 
 interface HeaderProps extends FlexProps{
 	onOpen: () => void
@@ -79,6 +78,12 @@ const SearchButton = () => {
 
 const AddMenu = () => {
 	const { isOpen, onOpen, onClose } = useDisclosure()
+	const fileInputRef = useRef<HTMLInputElement>(null)
+	const handleUpload = () => {
+		if (!fileInputRef.current) return
+		fileInputRef.current.click()
+	}
+
 	return (
 		<>
 			<Menu>
@@ -102,7 +107,7 @@ const AddMenu = () => {
 					pr="5px"
 				>
 					<MenuGroup title="File" fontSize="12px" fontWeight="500">
-						<MenuItem icon={<UploadOne />} rounded="md">
+						<MenuItem icon={<UploadOne />} rounded="md" onClick={handleUpload}>
 							<Box fontSize="14px" fontWeight="400">
 								Upload
 							</Box>
@@ -114,53 +119,43 @@ const AddMenu = () => {
 						</MenuItem>
 					</MenuGroup>
 				</MenuList>
+
 			</Menu>
 			<CreateFolderModal isOpen={isOpen} onClose={onClose} />
+			<input
+				ref={fileInputRef}
+				hidden
+				type="file"
+				multiple={false}
+				onChange={(event) => {
+					if (!event.currentTarget) return
+					if (!event.currentTarget.files) return
+					const file = event.currentTarget.files.item(0)
+					if (!file) return
+					alert(file.name)
+				}}
+			/>
 		</>
 	)
 }
 
-interface Folder{
-	name: string
-	id: string
-}
-
 const FolderBreadCrumb = () => {
-	const [folders, setFolders] = useState<Folder[]>([])
-
-	const { token, loading } = useAuth()
-
-	useEffect(() => {
-		if (loading) return
-		if (!token) return
-		GetPathApi(token, 'root')
-			.then((res) => {
-				if (!res.ok) {
-					return
-				}
-				res.json().then((data) => {
-					const folders = data.data
-					setFolders(folders)
-				})
-			})
-			.catch((e: any) => {
-
-			})
-			.finally(() => {
-
-			})
-	}, [loading, token])
+	// @ts-ignore
+	const { path } = useRouteLoaderData('folders')
 
 	return (
 		<>
 			<Breadcrumb>
-				{folders.map((folder) => {
+				{/*@ts-ignore*/}
+				{path.map((folder) => {
 					return (
 						<BreadcrumbItem key={`breadcrumb-${folder.id}`}>
 							<BreadcrumbLink
+								as={Link}
 								_hover={{ textDecoration: 'none' }}
 								fontSize="md"
 								fontWeight="bold"
+								to={`/drive/folders/${folder.id}`}
 							>
 								{folder.name}
 							</BreadcrumbLink>

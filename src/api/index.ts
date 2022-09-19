@@ -20,43 +20,43 @@ export const SignupApi = async(data: { username: string, password: string }) => 
 	})
 }
 
-export const GetPathApi = async(token: string, parentID: string) => {
+export const GetPathApi = async(parentID: string) => {
 	return fetch(`${API_HOST}/folders/${parentID}/path`, {
 		headers: {
-			'Authorization': `Bearer ${token}`,
+			'Authorization': `Bearer ${localStorage.getItem('token')}`,
 		},
 	})
 }
 
-export const GetFoldersAndFilesByParentIDApi = async(token: string, parentID: string) => {
+export const GetFoldersAndFilesByParentIDApi = async(parentID: string) => {
 	return fetch(`${API_HOST}/folders/${parentID}/all`, {
 		headers: {
-			'Authorization': `Bearer ${token}`,
+			'Authorization': `Bearer ${localStorage.getItem('token')}`,
 		},
 	})
 }
 
-export const GetFoldersByParentIDApi = async(token: string, parentID: string) => {
+export const GetFoldersByParentIDApi = async(parentID: string) => {
 	return fetch(`${API_HOST}/folders/${parentID}/folders`, {
 		headers: {
-			'Authorization': `Bearer ${token}`,
+			'Authorization': `Bearer ${localStorage.getItem('token')}`,
 		},
 	})
 }
 
-export const GetFilesByParentIDApi = async(token: string, parentID: string) => {
+export const GetFilesByParentIDApi = async(parentID: string) => {
 	return fetch(`${API_HOST}/folders/${parentID}/files`, {
 		headers: {
-			'Authorization': `Bearer ${token}`,
+			'Authorization': `Bearer ${localStorage.getItem('token')}`,
 		},
 	})
 }
 
-export const CreateFolderApi = async(token: string, parentID: string, folderName: string) => {
+export const CreateFolderApi = async(parentID: string, folderName: string) => {
 	return fetch(`${API_HOST}/folders/${parentID}/${folderName}`, {
 		method: 'POST',
 		headers: {
-			'Authorization': `Bearer ${token}`,
+			'Authorization': `Bearer ${localStorage.getItem('token')}`,
 		},
 	})
 }

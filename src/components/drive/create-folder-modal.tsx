@@ -12,11 +12,11 @@ import {
 	useColorModeValue,
 	useToast,
 } from '@chakra-ui/react'
+import { useParams } from 'react-router-dom'
+import { useState } from 'react'
 
 import { FolderIcon } from '../icons/FolderIcon'
-import { useState } from 'react'
 import { CreateFolderApi } from '../../api'
-import useAuth from '../../hooks/useAuth'
 
 interface InterfaceCreatFolderModal{
 	isOpen: boolean
@@ -26,14 +26,14 @@ interface InterfaceCreatFolderModal{
 const CreateFolderModal = (props: InterfaceCreatFolderModal) => {
 	const [folderName, setFolderName] = useState('')
 	const [loading, setLoading] = useState(false)
-	const { loading: authLoading, token } = useAuth()
 	const toast = useToast()
+
+	const { parentID } = useParams()
+
 	const handleCreateFolder = async() => {
-		if (authLoading) return
-		if (!token) return
 		setLoading(true)
 		try {
-			const res = await CreateFolderApi(token, 'root', folderName)
+			const res = await CreateFolderApi(parentID || 'root', folderName)
 			if (!res.ok) {
 				toast({
 					title: 'Error',

@@ -11,7 +11,7 @@ const Index = () => {
 		if (!auth) {
 			navigate('/login')
 		} else {
-			navigate('/drive')
+			navigate('/drive/folders/root')
 		}
 	}, [loading])
 	return (

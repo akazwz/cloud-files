@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
-import Drive from './routes/drive'
+import Drive, { loader as DriveLoader } from './routes/drive'
 import ErrorPage from './error-page'
 import Index from './routes'
 import { DashLayout } from './layouts/dash'
@@ -26,8 +26,10 @@ const router = createBrowserRouter([
 		errorElement: <ErrorPage />,
 		children: [
 			{
-				path: '',
+				path: 'folders/:parentID',
 				element: <Drive />,
+				id: 'folders',
+				loader: DriveLoader
 			},
 		],
 	},
