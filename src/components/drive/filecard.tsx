@@ -25,8 +25,6 @@ export const FileGrid = (props: GridProps) => {
 export const FileCard = (file: FileProps) => {
 	const Content = () => {
 		switch (file.type) {
-			case 'folder':
-				return <FolderCard name={file.name} />
 			case 'image':
 				return <ImageCard name={file.name} size={file.size} />
 			default:
@@ -39,8 +37,13 @@ export const FileCard = (file: FileProps) => {
 	)
 }
 
-const FolderCard = ({ name }: { name: string }) => {
-	const filename = name.length > 10 ? name.slice(0, 7) + '...' : name
+export interface FolderProps{
+	name: string,
+	id: string
+}
+
+export const FolderCard = ({ name, id }: FolderProps) => {
+	const folderName = name.length > 10 ? name.slice(0, 7) + '...' : name
 
 	return (
 		<Box
@@ -55,7 +58,7 @@ const FolderCard = ({ name }: { name: string }) => {
 		>
 			<FolderIcon fontSize="90" />
 			<Tooltip label={name}>
-				<Text fontWeight="500" whiteSpace="nowrap" maxWidth="100px">{filename}</Text>
+				<Text fontWeight="500" whiteSpace="nowrap" maxWidth="100px">{folderName}</Text>
 			</Tooltip>
 			<Text mb="20px">{''}</Text>
 		</Box>

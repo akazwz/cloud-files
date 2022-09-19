@@ -10,9 +10,13 @@ import {
 	Input,
 	Center,
 	useColorModeValue,
+	useToast,
 } from '@chakra-ui/react'
 
 import { FolderIcon } from '../icons/FolderIcon'
+import { useState } from 'react'
+import { CreateFolderApi } from '../../api'
+import useAuth from '../../hooks/useAuth'
 
 interface InterfaceCreatFolderModal{
 	isOpen: boolean
@@ -20,6 +24,39 @@ interface InterfaceCreatFolderModal{
 }
 
 const CreateFolderModal = (props: InterfaceCreatFolderModal) => {
+	const [folderName, setFolderName] = useState('')
+	const [loading, setLoading] = useState(false)
+	const { loading: authLoading, token } = useAuth()
+	const toast = useToast()
+	const handleCreateFolder = async() => {
+		if (authLoading) return
+		if (!token) return
+		setLoading(true)
+		try {
+			const res = await CreateFolderApi(token, 'root', folderName)
+			if (!res.ok) {
+				toast({
+					title: 'Error',
+					status: 'error',
+					isClosable: true,
+				})
+				return
+			}
+			toast({
+				title: 'Success',
+				status: 'success',
+				isClosable: true,
+			})
+		} catch (e: any) {
+			toast({
+				title: 'Error',
+				status: 'error',
+				isClosable: true,
+			})
+		} finally {
+			setLoading(false)
+		}
+	}
 	return (
 		<>
 			<Modal isOpen={props.isOpen} onClose={props.onClose}>
@@ -36,6 +73,8 @@ const CreateFolderModal = (props: InterfaceCreatFolderModal) => {
 							placeholder={'Folder Name'}
 							fontSize="14px"
 							autoFocus
+							value={folderName}
+							onInput={(e) => setFolderName(e.currentTarget.value)}
 						/>
 					</ModalBody>
 					<ModalFooter>
@@ -43,6 +82,8 @@ const CreateFolderModal = (props: InterfaceCreatFolderModal) => {
 							size="sm"
 							fontSize="14px"
 							colorScheme="blue"
+							isLoading={loading}
+							onClick={handleCreateFolder}
 						>
 							OK
 						</Button>

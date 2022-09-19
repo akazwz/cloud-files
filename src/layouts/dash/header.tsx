@@ -140,8 +140,7 @@ const FolderBreadCrumb = () => {
 				}
 				res.json().then((data) => {
 					const folders = data.data
-
-					setFolders(() => folders)
+					setFolders(folders)
 				})
 			})
 			.catch((e: any) => {
