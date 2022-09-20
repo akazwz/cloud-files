@@ -11,7 +11,28 @@ import Login from './routes/login'
 import Signup from './routes/signup'
 import PasswordReset from './routes/password-reset'
 
-const theme = extendTheme({})
+const theme = extendTheme({
+	tokens: {
+		colors: {
+			'body-bg': {
+				default: 'white',
+				_dark: 'black',
+			},
+			'body-color': {
+				default: 'black',
+				_dark: 'white',
+			},
+		},
+	},
+	styles: {
+		global: {
+			body: {
+				bg: 'body-bg',
+				color: 'body-color',
+			},
+		},
+	},
+})
 
 const router = createBrowserRouter([
 	{

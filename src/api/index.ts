@@ -60,3 +60,30 @@ export const CreateFolderApi = async(parentID: string, folderName: string) => {
 		},
 	})
 }
+
+export const DeleteFolderApi = async(id: string) => {
+	return fetch(`${API_HOST}/folders/${id}`, {
+		method: 'DELETE',
+		headers: {
+			'Authorization': `Bearer ${localStorage.getItem('token')}`,
+		},
+	})
+}
+
+export const RenameFolderApi = async(id: string, name: string) => {
+	return fetch(`${API_HOST}/folders/${id}/name/${name}`, {
+		method: 'PATCH',
+		headers: {
+			'Authorization': `Bearer ${localStorage.getItem('token')}`,
+		},
+	})
+}
+
+export const CreateFileApi = async(parentID: string, folderName: string) => {
+	return fetch(`${API_HOST}/files/${parentID}/${folderName}`, {
+		method: 'POST',
+		headers: {
+			'Authorization': `Bearer ${localStorage.getItem('token')}`,
+		},
+	})
+}

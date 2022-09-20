@@ -40,7 +40,7 @@ export const NavLinks = ({ mini }: NavLinksProps) => {
 	const hoverBg = useColorModeValue('gray.200', 'gray.700')
 
 	const LinkList: LinkProps[] = [
-		{ name: 'Drive', route: '/drive', icon: 'CloudStorage' },
+		{ name: 'Drive', route: '/drive/folders/root', icon: 'CloudStorage' },
 		{ name: 'Movies', route: '/drive/movies', icon: 'Movie' },
 		{ name: 'Album', route: '/drive/album', icon: 'ImageFiles' },
 		{ name: 'Analysis', route: '/drive/analysis', icon: 'Analysis' },

@@ -10,32 +10,33 @@ import {
 	Input,
 	Center,
 	useColorModeValue,
-	useToast,
+	useToast, Heading, Text, VStack,
 } from '@chakra-ui/react'
-import { useLoaderData, useLocation, useNavigate, useNavigation, useParams } from 'react-router-dom'
 import { useState } from 'react'
 
 import { FolderIcon } from '../icons/FolderIcon'
-import { CreateFolderApi } from '../../api'
+import { RenameFolderApi } from '../../api'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 interface InterfaceCreatFolderModal{
 	isOpen: boolean
 	onClose: () => void
+	id: string
+	originName: string
 }
 
-const CreateFolderModal = (props: InterfaceCreatFolderModal) => {
+const RenameFolderModal = (props: InterfaceCreatFolderModal) => {
 	const [folderName, setFolderName] = useState('')
 	const [loading, setLoading] = useState(false)
 	const toast = useToast()
 
-	const { parentID } = useParams()
 	const location = useLocation()
 	const navigate = useNavigate()
 
-	const handleCreateFolder = async() => {
+	const handleRenameFolder = async() => {
 		setLoading(true)
 		try {
-			const res = await CreateFolderApi(parentID || 'root', folderName)
+			const res = await RenameFolderApi(props.id, folderName)
 			if (!res.ok) {
 				toast({
 					title: 'Error',
@@ -60,20 +61,22 @@ const CreateFolderModal = (props: InterfaceCreatFolderModal) => {
 			navigate(location.pathname, { replace: true })
 		}
 	}
+	
 	return (
 		<>
 			<Modal isOpen={props.isOpen} onClose={props.onClose}>
 				<ModalOverlay />
 				<ModalContent bg={useColorModeValue('white', 'black')} borderWidth={1}>
-					<ModalHeader>New Folder</ModalHeader>
+					<ModalHeader>Rename Folder</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody>
-						<Center p={10}>
+						<VStack p={10}>
 							<FolderIcon fontSize="100" />
-						</Center>
+							<Text fontWeight="bold">{props.originName}</Text>
+						</VStack>
 						<Input
 							w="full"
-							placeholder={'Folder Name'}
+							placeholder={'New Name'}
 							fontSize="14px"
 							autoFocus
 							value={folderName}
@@ -86,7 +89,7 @@ const CreateFolderModal = (props: InterfaceCreatFolderModal) => {
 							fontSize="14px"
 							colorScheme="blue"
 							isLoading={loading}
-							onClick={handleCreateFolder}
+							onClick={handleRenameFolder}
 						>
 							OK
 						</Button>
@@ -97,4 +100,4 @@ const CreateFolderModal = (props: InterfaceCreatFolderModal) => {
 	)
 }
 
-export default CreateFolderModal
+export default RenameFolderModal

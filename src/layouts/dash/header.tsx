@@ -25,12 +25,13 @@ import {
 	useDisclosure,
 	FlexProps,
 } from '@chakra-ui/react'
-import { Link, useRouteLoaderData } from 'react-router-dom'
+import { ChangeEvent, useRef } from 'react'
+import { Link, useParams, useRouteLoaderData } from 'react-router-dom'
 import { FolderPlus, HamburgerButton, UploadOne } from '@icon-park/react'
 import { AddIcon, SearchIcon } from '@chakra-ui/icons'
 
 import CreateFolderModal from '../../components/drive/create-folder-modal'
-import { useRef } from 'react'
+import { hashFile } from '../../utils/hash'
 
 interface HeaderProps extends FlexProps{
 	onOpen: () => void
@@ -50,7 +51,7 @@ const SearchButton = () => {
 			/>
 			<Modal isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />
-				<ModalContent bg={useColorModeValue('white', 'black')}>
+				<ModalContent bg={useColorModeValue('white', 'black')} borderWidth={1}>
 					<ModalHeader>Search</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody>
@@ -79,9 +80,24 @@ const SearchButton = () => {
 const AddMenu = () => {
 	const { isOpen, onOpen, onClose } = useDisclosure()
 	const fileInputRef = useRef<HTMLInputElement>(null)
+
+	const { parentID } = useParams()
+
 	const handleUpload = () => {
 		if (!fileInputRef.current) return
 		fileInputRef.current.click()
+	}
+
+	const handleInputOnChange = async(event: ChangeEvent<HTMLInputElement>) => {
+		if (!event.currentTarget) return
+		if (!event.currentTarget.files) return
+		const file = event.currentTarget.files.item(0)
+		if (!file) return
+		const hash = await hashFile('SHA-256', await file.arrayBuffer())
+		const provider = 'r2'
+		const uri = 'https://cloudz.pexni.com/ani.png'
+		// get uri by hash
+		alert(hash + parentID)
 	}
 
 	return (
@@ -127,13 +143,7 @@ const AddMenu = () => {
 				hidden
 				type="file"
 				multiple={false}
-				onChange={(event) => {
-					if (!event.currentTarget) return
-					if (!event.currentTarget.files) return
-					const file = event.currentTarget.files.item(0)
-					if (!file) return
-					alert(file.name)
-				}}
+				onChange={handleInputOnChange}
 			/>
 		</>
 	)

@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react'
+import { LoaderFunction, useLoaderData } from 'react-router-dom'
 
 import { FileCard, FileGrid, FolderCard } from '../components/drive/filecard'
-import { LoaderFunction, useLoaderData } from 'react-router-dom'
 import { GetFoldersAndFilesByParentIDApi, GetPathApi } from '../api'
 
 export const loader: LoaderFunction = async({ params }) => {
