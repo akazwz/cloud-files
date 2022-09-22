@@ -23,7 +23,7 @@ import {
 	Button,
 	useColorModeValue,
 	useDisclosure,
-	FlexProps,
+	FlexProps, useToast,
 } from '@chakra-ui/react'
 import { ChangeEvent, useRef } from 'react'
 import { Link, useParams, useRouteLoaderData } from 'react-router-dom'
@@ -31,7 +31,8 @@ import { FolderPlus, HamburgerButton, UploadOne } from '@icon-park/react'
 import { AddIcon, SearchIcon } from '@chakra-ui/icons'
 
 import CreateFolderModal from '../../components/drive/create-folder-modal'
-import { hashFile } from '../../utils/hash'
+import { CreateFileApi, } from '../../api'
+import { HashFile } from '../../utils/file'
 
 interface HeaderProps extends FlexProps{
 	onOpen: () => void
@@ -88,20 +89,28 @@ const AddMenu = () => {
 		fileInputRef.current.click()
 	}
 
+	const toast = useToast()
+
 	const handleInputOnChange = async(event: ChangeEvent<HTMLInputElement>) => {
 		if (!event.currentTarget) return
 		if (!event.currentTarget.files) return
 		const file = event.currentTarget.files.item(0)
 		if (!file) return
-		const hash = await hashFile('SHA-256', await file.arrayBuffer())
-		const provider = 'r2'
-		const uri = 'https://cloudz.pexni.com/ani.png'
-		// get uri by hash
-		alert(hash + parentID)
+		try {
+			const hash = await HashFile(file, 'sha256')
+			toast({
+				title: hash,
+			})
+			const res = await CreateFileApi(file, parentID || 'root')
+			const json = await res.json()
+			console.log(json)
+		} catch (e: any) {
+			console.log(e.message)
+		}
 	}
 
 	return (
-		<>
+		<Box>
 			<Menu>
 				<MenuButton
 					aria-label={'Add'}
@@ -145,7 +154,7 @@ const AddMenu = () => {
 				multiple={false}
 				onChange={handleInputOnChange}
 			/>
-		</>
+		</Box>
 	)
 }
 

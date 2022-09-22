@@ -1,3 +1,5 @@
+import { HashFile } from '../utils/file'
+
 const API_HOST = 'http://localhost:8080'
 
 export const LoginApi = async(data: { username: string, password: string }) => {
@@ -79,9 +81,33 @@ export const RenameFolderApi = async(id: string, name: string) => {
 	})
 }
 
-export const CreateFileApi = async(parentID: string, folderName: string) => {
-	return fetch(`${API_HOST}/files/${parentID}/${folderName}`, {
+export const CreateFileApi = async(file: File, parentId: string) => {
+	const chunkSize = 4 * 1024 * 1024
+	const partCount = Math.ceil(file.size / chunkSize)
+	const partInfoList = []
+	for (let i = 1; i <= partCount; i++) {
+		partInfoList.push({ part_number: i })
+	}
+	const hash = await HashFile(file, 'sha256')
+
+	return fetch(`${API_HOST}/files`, {
 		method: 'POST',
+		body: JSON.stringify({
+			content_hash: hash,
+			name: file.name,
+			size: file.size,
+			parent_id: parentId,
+			part_info_list: partInfoList
+		}),
+		headers: {
+			'Authorization': `Bearer ${localStorage.getItem('token')}`,
+			'Content-Type': 'application/json',
+		},
+	})
+}
+
+export const GetUploadURLApi = async(name: string) => {
+	return fetch(`${API_HOST}/s3/wasabi/${name}/upload`, {
 		headers: {
 			'Authorization': `Bearer ${localStorage.getItem('token')}`,
 		},
