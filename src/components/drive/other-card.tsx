@@ -1,74 +1,25 @@
-import React, { MouseEvent, useState } from 'react'
 import {
 	Box,
-	Grid,
 	Menu,
-	MenuButton,
-	MenuItem,
-	MenuList,
+	MenuButton, MenuItem,
+	MenuList, Portal,
 	Text,
 	Tooltip,
 	useColorModeValue,
 	useDisclosure,
-	Portal,
-	useToast,
-	GridProps,
+	useToast
 } from '@chakra-ui/react'
+import { OtherIcon } from '../icons/OtherIcon'
+import React, { MouseEvent, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { DeleteFileApi } from '../../api'
 import { Delete, Edit, Info } from '@icon-park/react'
 
-import { FolderIcon } from '../icons/FolderIcon'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { DeleteFolderApi } from '../../api'
+import { FileProps } from './filecard'
 
-import RenameFolderModal from './rename-folder-modal'
+const OtherCard = ({ data }: { data: FileProps }) => {
+	const filename = data.name.length > 10 ? data.name.slice(0, 7) + '...' : data.name
 
-import OtherCard from './other-card'
-import ImageCard from './image-card'
-
-export interface FileProps{
-	id: string
-	category: string
-	name: string
-	size: number
-	starred: boolean
-	thumbnail: string
-	url: string
-}
-
-export const FileGrid = (props: GridProps) => {
-	return (
-		<Grid
-			boxSizing="border-box"
-			gridTemplateColumns="repeat(auto-fill, 9rem)"
-			justifyContent="space-between"
-			alignItems="flex-end"
-			{...props}
-		/>
-	)
-}
-
-export const FileCard = (file: FileProps) => {
-	const Content = () => {
-		switch (file.category) {
-			case 'image':
-				return <ImageCard name={file.name} size={file.size} url={file.url} />
-			default:
-				return <OtherCard data={file} />
-		}
-	}
-
-	return (
-		<Content />
-	)
-}
-
-export interface FolderProps{
-	name: string,
-	id: string
-}
-
-export const FolderCard = ({ name, id }: FolderProps) => {
-	const folderName = name.length > 10 ? name.slice(0, 7) + '...' : name
 	const { isOpen, onOpen, onClose } = useDisclosure()
 	const { isOpen: renameIsOpen, onOpen: renameOnOpen, onClose: renameOnClose } = useDisclosure()
 	const toast = useToast()
@@ -85,7 +36,7 @@ export const FolderCard = ({ name, id }: FolderProps) => {
 
 	const handleDelete = async() => {
 		try {
-			const res = await DeleteFolderApi(id)
+			const res = await DeleteFileApi(data.id)
 			if (!res.ok) {
 				toast({
 					title: 'Error',
@@ -125,17 +76,19 @@ export const FolderCard = ({ name, id }: FolderProps) => {
 			overflow="hidden"
 			textAlign="center"
 			onClick={() => {
-				if (!isOpen) {
-					navigate(`/drive/folders/${id}`)
-				}
+				if (isOpen) return
+				const ele = document.createElement('a')
+				ele.setAttribute('href', data.url)
+				ele.setAttribute('download', data.name)
+				ele.click()
 			}}
 			onContextMenu={handleContextMenu}
 		>
-			<FolderIcon fontSize="90" />
-			<Tooltip label={name}>
-				<Text fontWeight="500" whiteSpace="nowrap" maxWidth="100px">{folderName}</Text>
+			<OtherIcon fontSize="90" />
+			<Tooltip label={data.name}>
+				<Text fontWeight="500" whiteSpace="nowrap" maxWidth="100px">{filename}</Text>
 			</Tooltip>
-			<Text mb="20px">{''}</Text>
+			<Text fontWeight="300" fontSize="13px">{data.size}</Text>
 			<Portal>
 				<Menu isOpen={isOpen} onClose={onClose}>
 					<MenuButton position="absolute" left={pos[0]} top={pos[1]} cursor="default" />
@@ -179,10 +132,8 @@ export const FolderCard = ({ name, id }: FolderProps) => {
 					</MenuList>
 				</Menu>
 			</Portal>
-			<RenameFolderModal isOpen={renameIsOpen} onClose={renameOnClose} id={id} originName={name} />
 		</Box>
 	)
 }
 
-
-
+export default OtherCard

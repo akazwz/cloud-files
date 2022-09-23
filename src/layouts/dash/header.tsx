@@ -26,12 +26,12 @@ import {
 	FlexProps, useToast,
 } from '@chakra-ui/react'
 import { ChangeEvent, useRef } from 'react'
-import { Link, useParams, useRouteLoaderData } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams, useRouteLoaderData } from 'react-router-dom'
 import { FolderPlus, HamburgerButton, UploadOne } from '@icon-park/react'
 import { AddIcon, SearchIcon } from '@chakra-ui/icons'
 
 import CreateFolderModal from '../../components/drive/create-folder-modal'
-import { CreateFileApi, } from '../../api'
+import { CompleteMultipartUpload, CreateFileOrGetUploadUrlList, } from '../../api'
 import { HashFile } from '../../utils/file'
 
 interface HeaderProps extends FlexProps{
@@ -84,6 +84,9 @@ const AddMenu = () => {
 
 	const { parentID } = useParams()
 
+	const location = useLocation()
+	const navigate = useNavigate()
+
 	const handleUpload = () => {
 		if (!fileInputRef.current) return
 		fileInputRef.current.click()
@@ -97,15 +100,81 @@ const AddMenu = () => {
 		const file = event.currentTarget.files.item(0)
 		if (!file) return
 		try {
+			const chunkSize = 10 * 1024 * 1024
+			const partCount = Math.ceil(file.size / chunkSize)
 			const hash = await HashFile(file, 'sha256')
-			toast({
-				title: hash,
+			const partInfoList = []
+			for (let i = 1; i <= partCount; i++) {
+				partInfoList.push({ part_number: i })
+			}
+
+			const res = await CreateFileOrGetUploadUrlList({
+				content_hash: hash,
+				name: file.name,
+				size: file.size,
+				parent_id: parentID || 'root',
+				part_info_list: partInfoList
 			})
-			const res = await CreateFileApi(file, parentID || 'root')
+
+			if (!res.ok) {
+				toast({
+					title: 'Error',
+					status: 'error',
+				})
+				return
+			}
+
 			const json = await res.json()
-			console.log(json)
+
+			// hash 匹配创建成功
+			if (!json.data.upload_id) {
+				toast({
+					title: 'Success',
+					status: 'success',
+				})
+				navigate(location.pathname, { replace: true })
+				return
+			}
+
+			const uploadId = json.data.upload_id.UploadId
+			const key = json.data.upload_id.Key
+			const uploadUrlList = json.data.upload_url_list
+
+			// 分段上传
+			for (const partNumber in uploadUrlList) {
+				const start = (Number(partNumber) - 1) * chunkSize
+				const part = file.slice(start, start + chunkSize)
+				const url = uploadUrlList[partNumber]
+				console.log(part.size)
+
+				await fetch(url, {
+					method: 'PUT',
+					body: await part.arrayBuffer(),
+				})
+			}
+
+			// 完成上传
+			await CompleteMultipartUpload({
+				name: file.name,
+				size: file.size,
+				key,
+				upload_id: uploadId,
+				content_hash: hash,
+				parent_id: parentID || 'root',
+				part_count: partCount,
+			})
+
+			// 上传成功，刷新
+			toast({
+				title: 'Success',
+				status: 'success',
+			})
+			navigate(location.pathname, { replace: true })
 		} catch (e: any) {
-			console.log(e.message)
+			toast({
+				title: e.message,
+				status: 'error',
+			})
 		}
 	}
 

@@ -47,10 +47,12 @@ const Drive = () => {
 				{/*@ts-ignore*/}
 				{files.map((file) => (
 					<FileCard
+						id={file.id}
 						key={'files-' + file.id}
 						name={file.name}
 						size={file.size}
-						category={''}
+						url={file.url}
+						category={file.category}
 						starred={false}
 						thumbnail={''}
 					/>
