@@ -69,6 +69,7 @@ const VideoCard = ({ data }: { data: FileProps }) => {
 	}
 
 	const handleOpenLightBox = () => {
+		if (isOpen) return
 		lightBoxOnOpen()
 	}
 
@@ -92,8 +93,8 @@ const VideoCard = ({ data }: { data: FileProps }) => {
 			<Text fontWeight="300" fontSize="13px">{data.size}</Text>
 			<Portal>
 				<LightBox isOpen={lightBoxIsOpen} onClose={lightBoxOnClose}>
-					<Flex height="90vh"  alignItems="center" justifyContent="center" p={30}>
-						<video src={data.url} controls/>
+					<Flex height="90vh" alignItems="center" justifyContent="center">
+						<video src={data.url} controls />
 					</Flex>
 				</LightBox>
 			</Portal>

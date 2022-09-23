@@ -68,6 +68,7 @@ const ImageCard = ({ data }: { data: FileProps }) => {
 	}
 
 	const handleOpenLightBox = () => {
+		if (isOpen) return
 	  lightBoxOnOpen()
 	}
 
