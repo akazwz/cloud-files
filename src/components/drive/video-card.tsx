@@ -1,78 +1,29 @@
-import React, { MouseEvent, useState } from 'react'
 import {
-	Box,
-	Grid,
+	Box, Flex,
+	Image,
 	Menu,
-	MenuButton,
-	MenuItem,
-	MenuList,
+	MenuButton, MenuItem,
+	MenuList, Portal,
 	Text,
 	Tooltip,
 	useColorModeValue,
 	useDisclosure,
-	Portal,
-	useToast,
-	GridProps,
+	useToast
 } from '@chakra-ui/react'
-import { Delete, Edit, Info } from '@icon-park/react'
-
-import { FolderIcon } from '../icons/FolderIcon'
+import { ImageIcon } from '../icons/ImageIcon'
+import React, { MouseEvent, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { DeleteFolderApi } from '../../api'
+import { DeleteFileApi } from '../../api'
+import { FileProps } from './filecard'
+import { Delete, Edit, Info } from '@icon-park/react'
+import LightBox from '../light-box'
+import { VideoIcon } from '../icons/VideoIcon'
 
-import RenameFolderModal from './rename-folder-modal'
+const VideoCard = ({ data }: { data: FileProps }) => {
+	const filename = data.name.length > 10 ? data.name.slice(0, 7) + '...' : data.name
 
-import OtherCard from './other-card'
-import ImageCard from './image-card'
-import VideoCard from './video-card'
-
-export interface FileProps{
-	id: string
-	category: string
-	name: string
-	size: number
-	starred: boolean
-	thumbnail: string
-	url: string
-}
-
-export const FileGrid = (props: GridProps) => {
-	return (
-		<Grid
-			boxSizing="border-box"
-			gridTemplateColumns="repeat(auto-fill, 9rem)"
-			justifyContent="space-between"
-			alignItems="flex-end"
-			{...props}
-		/>
-	)
-}
-
-export const FileCard = (file: FileProps) => {
-	const Content = () => {
-		switch (file.category) {
-			case 'image':
-				return <ImageCard data={file} />
-			case 'video':
-				return <VideoCard data={file} />
-			default:
-				return <OtherCard data={file} />
-		}
-	}
-
-	return (
-		<Content />
-	)
-}
-
-export interface FolderProps{
-	name: string,
-	id: string
-}
-
-export const FolderCard = ({ name, id }: FolderProps) => {
-	const folderName = name.length > 10 ? name.slice(0, 7) + '...' : name
 	const { isOpen, onOpen, onClose } = useDisclosure()
+	const { isOpen: lightBoxIsOpen, onOpen: lightBoxOnOpen, onClose: lightBoxOnClose } = useDisclosure()
 	const { isOpen: renameIsOpen, onOpen: renameOnOpen, onClose: renameOnClose } = useDisclosure()
 	const toast = useToast()
 	const [pos, setPos] = useState<[number, number]>([0, 0])
@@ -88,7 +39,7 @@ export const FolderCard = ({ name, id }: FolderProps) => {
 
 	const handleDelete = async() => {
 		try {
-			const res = await DeleteFolderApi(id)
+			const res = await DeleteFileApi(data.id)
 			if (!res.ok) {
 				toast({
 					title: 'Error',
@@ -117,6 +68,10 @@ export const FolderCard = ({ name, id }: FolderProps) => {
 		renameOnOpen()
 	}
 
+	const handleOpenLightBox = () => {
+		lightBoxOnOpen()
+	}
+
 	return (
 		<Box
 			width="8.7rem"
@@ -127,18 +82,21 @@ export const FolderCard = ({ name, id }: FolderProps) => {
 			mx="auto"
 			overflow="hidden"
 			textAlign="center"
-			onClick={() => {
-				if (!isOpen) {
-					navigate(`/drive/folders/${id}`)
-				}
-			}}
 			onContextMenu={handleContextMenu}
+			onClick={handleOpenLightBox}
 		>
-			<FolderIcon fontSize="90" />
-			<Tooltip label={name}>
-				<Text fontWeight="500" whiteSpace="nowrap" maxWidth="100px">{folderName}</Text>
+			<VideoIcon fontSize="90" />
+			<Tooltip label={data.name}>
+				<Text fontWeight="500" whiteSpace="nowrap" maxWidth="100px">{filename}</Text>
 			</Tooltip>
-			<Text mb="20px">{''}</Text>
+			<Text fontWeight="300" fontSize="13px">{data.size}</Text>
+			<Portal>
+				<LightBox isOpen={lightBoxIsOpen} onClose={lightBoxOnClose}>
+					<Flex height="90vh"  alignItems="center" justifyContent="center" p={30}>
+						<video src={data.url} controls/>
+					</Flex>
+				</LightBox>
+			</Portal>
 			<Portal>
 				<Menu isOpen={isOpen} onClose={onClose}>
 					<MenuButton position="absolute" left={pos[0]} top={pos[1]} cursor="default" />
@@ -182,10 +140,8 @@ export const FolderCard = ({ name, id }: FolderProps) => {
 					</MenuList>
 				</Menu>
 			</Portal>
-			<RenameFolderModal isOpen={renameIsOpen} onClose={renameOnClose} id={id} originName={name} />
 		</Box>
 	)
 }
 
-
-
+export default VideoCard
