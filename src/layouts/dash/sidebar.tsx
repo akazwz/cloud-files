@@ -13,6 +13,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { ColorModeToggle } from '../../components/color-mode-toggle'
 import { Logo } from '../../components/logo'
+import User from '../../components/user'
 
 interface SidebarProps extends BoxProps{
 	onClose: () => void;
@@ -134,6 +135,8 @@ export const DashSidebar = ({ onClose, mini, setMini, ...rest }: SidebarProps) =
 				</HStack>
 				<NavLinks mini={mini} />
 				<Spacer />
+				<Divider />
+				<User />
 				<Divider />
 				<SidebarFooter mini={mini} setMini={setMini} />
 			</Flex>

@@ -4,6 +4,7 @@ import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import Drive, { loader as DriveLoader } from './routes/drive'
+import Me, { loader as ProfileLoader } from './routes/me'
 import ErrorPage from './error-page'
 import Index from './routes'
 import { DashLayout } from './layouts/dash'
@@ -52,6 +53,12 @@ const router = createBrowserRouter([
 				id: 'folders',
 				loader: DriveLoader
 			},
+			{
+				path: 'me',
+				element: <Me />,
+				id: 'me',
+				loader: ProfileLoader
+			},
 		],
 	},
 	{
@@ -72,6 +79,7 @@ const router = createBrowserRouter([
 		errorElement: <ErrorPage />,
 		children: [],
 	},
+
 ])
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(

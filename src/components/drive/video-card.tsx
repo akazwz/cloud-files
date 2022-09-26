@@ -10,7 +10,6 @@ import {
 	useDisclosure,
 	useToast
 } from '@chakra-ui/react'
-import { ImageIcon } from '../icons/ImageIcon'
 import React, { MouseEvent, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { DeleteFileApi } from '../../api'
@@ -93,8 +92,8 @@ const VideoCard = ({ data }: { data: FileProps }) => {
 			<Text fontWeight="300" fontSize="13px">{data.size}</Text>
 			<Portal>
 				<LightBox isOpen={lightBoxIsOpen} onClose={lightBoxOnClose}>
-					<Flex height="90vh" alignItems="center" justifyContent="center">
-						<video src={data.url} controls />
+					<Flex height="90vh" justifyContent="center" alignItems="center" p={10}>
+						<video src={data.url} preload={data.url} controls style={{ width: '100%', height: '100%' }} />
 					</Flex>
 				</LightBox>
 			</Portal>

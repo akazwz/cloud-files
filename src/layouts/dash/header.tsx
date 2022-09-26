@@ -256,6 +256,8 @@ const FolderBreadCrumb = () => {
 }
 
 export const DashHeader = ({ onOpen, mini, ...rest }: HeaderProps) => {
+	const location = useLocation()
+	const pathname = location.pathname
 	return (
 		<Flex
 			ml={{ base: 0, md: mini ? 20 : 60 }}
@@ -275,12 +277,22 @@ export const DashHeader = ({ onOpen, mini, ...rest }: HeaderProps) => {
 				variant="outline"
 				icon={<HamburgerButton />}
 			/>
-			<HStack mr={{ base: 0, md: mini ? 20 : 60 }} flex={1} pl={3}>
-				<FolderBreadCrumb />
-				<Spacer />
-				<SearchButton />
-				<AddMenu />
-			</HStack>
+			{
+				pathname === '/drive/me' ? null
+					: (
+						<HStack
+							mr={{ base: 0, md: mini ? 20 : 60 }}
+							flex={1}
+							pl={3}
+						>
+							<FolderBreadCrumb />
+							<Spacer />
+							<SearchButton />
+							<AddMenu />
+						</HStack>
+					)
+			}
 		</Flex>
+
 	)
 }

@@ -133,3 +133,11 @@ export const DeleteFileApi = async(id: string) => {
 		},
 	})
 }
+
+export const ProfileApi = async() => {
+	return fetch(`${API_HOST}/auth/me`, {
+		headers: {
+			'Authorization': `Bearer ${localStorage.getItem('token')}`,
+		},
+	})
+}
