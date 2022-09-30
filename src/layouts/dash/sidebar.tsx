@@ -136,7 +136,7 @@ export const DashSidebar = ({ onClose, mini, setMini, ...rest }: SidebarProps) =
 				<NavLinks mini={mini} />
 				<Spacer />
 				<Divider />
-				<User />
+				<User  mini={mini}/>
 				<Divider />
 				<SidebarFooter mini={mini} setMini={setMini} />
 			</Flex>

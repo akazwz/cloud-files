@@ -3,10 +3,16 @@ import { LoaderFunction, useLoaderData } from 'react-router-dom'
 import { ProfileApi } from '../api'
 
 export const loader: LoaderFunction = async() => {
-	const res = await ProfileApi()
-	const json = await res.json()
-	return {
-		data: json.data
+	try {
+		const res = await ProfileApi()
+		const json = await res.json()
+		return {
+			data: json.data
+		}
+	} catch (e) {
+		return {
+			data: null
+		}
 	}
 }
 
