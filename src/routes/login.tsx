@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
 	Box,
 	Button,
@@ -14,7 +15,6 @@ import {
 } from '@chakra-ui/react'
 
 import useAuth from '../hooks/useAuth'
-import { useState } from 'react'
 import { LoginApi } from '../api'
 import { useNavigate } from 'react-router-dom'
 
@@ -47,7 +47,7 @@ const Login = () => {
 				status: 'success',
 				isClosable: true,
 			})
-			navigate('/drive')
+			navigate('/drive/folders/root')
 		} catch (e: any) {
 			toast({
 				title: e.message,
